@@ -1,6 +1,7 @@
 package com.zipcodewilmington.singlylinkedlist;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.logging.Logger;
 
@@ -52,7 +53,7 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
         return false;
     }
 
-    public Boolean removeInnerIf(K data) {
+    private Boolean removeInnerIf(K data) {
         if (head.equals(tail)) {
             head = null;
             tail = null;
@@ -70,7 +71,7 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
         } else { Logger.getGlobal().info("Bad list behavior, head was the element to be removed, didn't have a next but was also not equal to tail. Investigate remove() method logic");return false; }
     }
 
-    public Boolean removeInnerElse(K data) {
+    private Boolean removeInnerElse(K data) {
         Node current = head;
         while (current.hasNext()) {
             Node previous = current;
@@ -148,9 +149,11 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
 
     }
 
-    public Boolean reverse() {
-        return false;
+    public void reverse() {
+
     }
+
+
 
     public SinglyLinkedList<K> slice(int startIndex, int endIndex) {
         if (startIndex < 0 || endIndex < startIndex || endIndex > arrSize - 1) {
