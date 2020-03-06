@@ -1,5 +1,8 @@
 package com.zipcodewilmington.singlylinkedlist;
 
+import java.util.Arrays;
+import java.util.logging.Logger;
+
 /**
  * Created by leon on 1/10/18.
  */
@@ -8,32 +11,31 @@ public class SinglyLinkedList<K> {
     private Node<K>[] nodes;
     private Integer arrSize;
     private Node head;
+    private Node tail;
 
     public SinglyLinkedList() {
         nodes = new Node[0];
         arrSize = 0;
     }
 
-    public void add(K data) {
-        nodes = new Node[nodes.length + 1];
-        Node newNode = new Node(data);
-
-        if (nodes[0]==null) {
-            nodes[0] = newNode;
-            newNode.setIndex(0);
+    public Integer add(K data) {
+        Node<K>[] newArr = Arrays.copyOf(nodes, nodes.length +1);
+        if (head == null) {
+            Node newNode = new Node(data, 0);
             head = newNode;
+            tail = newNode;
+            arrSize++;
+            return 0;
+        } else if (tail != null) {
+            Node newNode = new Node(data, tail.index + 1);
+            tail.next = newNode;
+            tail = newNode;
+            arrSize++;
+            return newNode.index;
         } else {
-            Node head = nodes[0];
-            int iter = 1;
-            while (head.hasNext()) {
-                head = head.getNext();
-                iter++;
-            }
-            head.setNext(newNode);
-            head.setIndex(iter);
+            Logger.getGlobal().info("Head was not null, but tail was... something bad happened!");
         }
-        arrSize++;
-
+        return -1;
     }
 
     public Boolean remove(K data) {
@@ -138,13 +140,17 @@ public class SinglyLinkedList<K> {
 
     private class Node<K> {
 
-
         private K data;
         private Node next;
         private Integer index;
 
         public Node(K data) {
+           this(data, -1);
+        }
+
+        public Node(K data, int index) {
             this.data = data;
+            this.index = index;
             this.next = null;
         }
 
