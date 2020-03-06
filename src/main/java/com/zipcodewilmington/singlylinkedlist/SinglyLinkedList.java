@@ -1,95 +1,120 @@
 package com.zipcodewilmington.singlylinkedlist;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.logging.Logger;
+
 /**
  * Created by leon on 1/10/18.
  */
-public class SinglyLinkedList<K> {
+public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> {
 
-    private Node<K>[] nodes;
     private Integer arrSize;
     private Node head;
+    private Node tail;
 
     public SinglyLinkedList() {
-        nodes = new Node[0];
         arrSize = 0;
     }
 
-    public void add(K data) {
-        nodes = new Node[nodes.length + 1];
-        Node newNode = new Node(data);
-
-        if (nodes[0]==null) {
-            nodes[0] = newNode;
-            newNode.setIndex(0);
+    public Integer add(K data) {
+        if (head == null) {
+            Node newNode = new Node(data, 0);
             head = newNode;
+            tail = newNode;
+            arrSize++;
+            return 0;
+        } else if (tail != null) {
+            Node newNode = new Node(data, tail.index + 1);
+            tail.next = newNode;
+            tail = newNode;
+            arrSize++;
+            return newNode.index;
         } else {
-            Node head = nodes[0];
-            int iter = 1;
-            while (head.hasNext()) {
-                head = head.getNext();
-                iter++;
-            }
-            head.setNext(newNode);
-            head.setIndex(iter);
+            Logger.getGlobal().info("Head was not null, but tail was... something bad happened!");
         }
-        arrSize++;
-
+        return -1;
     }
 
     public Boolean remove(K data) {
-        Node head = this.head;
-
-        if (head != null && head.getData().equals(data)) {
-            this.head = head.getNext();
-            this.head.setIndex(this.head.getIndex() - 1);
-            Node headRef = this.head;
-            while (headRef.hasNext()) {
-                headRef = headRef.getNext();
-                headRef.setIndex(headRef.getIndex() - 1);
+        if (head != null) {
+            if (head.data.equals(data)) {
+                boolean toRet = removeInnerIf(data);
+                if (toRet) { arrSize--; }
+                return toRet;
             }
-            return true;
+            else {
+                boolean toRet = removeInnerElse(data);
+                if (toRet) { arrSize--; }
+                return toRet;
+            }
         }
+        return false;
+    }
 
-        while (head.hasNext()) {
-            Node updateRef = head.getNext();
-            if (updateRef.getData().equals(data)) {
-                head.setNext(updateRef.getNext());
-                updateRef.setIndex(head.getIndex() + 1);
-                while (updateRef.hasNext()) {
-                    Node nextt = updateRef.getNext();
-                    nextt.setIndex(updateRef.getIndex() + 1);
-                    updateRef = nextt;
+    public Boolean removeInnerIf(K data) {
+        if (head.equals(tail)) {
+            head = null;
+            tail = null;
+            arrSize = 0;
+            return true;
+        } else if (head.hasNext()) {
+            head = head.next;
+            Node current = head;
+            while (current.hasNext()) {
+                current.index--;
+                current = current.next;
+            }
+            current.index--;
+            return true;
+        } else { Logger.getGlobal().info("Bad list behavior, head was the element to be removed, didn't have a next but was also not equal to tail. Investigate remove() method logic");return false; }
+    }
+
+    public Boolean removeInnerElse(K data) {
+        Node current = head;
+        while (current.hasNext()) {
+            Node previous = current;
+            current = current.next;
+            if (current.data.equals(data)) {
+                previous.next = current.next;
+                while (current.hasNext()) {
+                    previous = current;
+                    current = current.next;
+                    current.index--;
                 }
-                arrSize--;
+                tail = previous;
                 return true;
             }
-            head = head.getNext();
         }
         return false;
     }
 
 
     public Boolean contains(K data) {
-        for (Node n : nodes) {
-            if (n.getData().equals(data)) {
+        if (head != null) {
+            if (head.data.equals(data)) {
                 return true;
+            }
+            Node current = head;
+            while (current.hasNext()) {
+                current = current.next;
+                if (current.data.equals(data)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    public Integer find(int index) {
-        Node head = nodes[0];
-        if (head != null && head.getIndex() == index) {
-            return head.getIndex();
-        }
-
-        while (head.hasNext()) {
-            Node next = head.getNext();
-            if (next.getIndex() == index) {
-                return next.getIndex();
+    public Integer find(K data) {
+        if (contains(data)) {
+            Node current = head;
+            while (current != null && !current.data.equals(data)) {
+                current = current.next;
             }
-            head = head.getNext();
+            if (current != null && current.data.equals(data)) {
+                return current.index;
+            }
         }
         return -1;
     }
@@ -99,17 +124,22 @@ public class SinglyLinkedList<K> {
     }
 
     public K get(int index) {
-        Integer indToCheck = find(index);
-        if (indToCheck > -1 && indToCheck < nodes.length) {
-            return nodes[indToCheck].getData();
+        Node current = head;
+        while (current != null && current.index != index) {
+            current = current.next;
+        }
+        if (current != null && current.index == index) {
+            return (K) current.data;
         }
         return null;
     }
 
     public SinglyLinkedList<K> copy() {
         SinglyLinkedList<K> newList = new SinglyLinkedList<>();
-        for (Node<K> n : nodes) {
-            newList.add(n.getData());
+        Node current = head;
+        while (current != null) {
+            newList.add((K) current.getData());
+            current = current.next;
         }
         return newList;
     }
@@ -118,33 +148,45 @@ public class SinglyLinkedList<K> {
 
     }
 
-    public void reverse() {
-
+    public Boolean reverse() {
+        return false;
     }
 
     public SinglyLinkedList<K> slice(int startIndex, int endIndex) {
-        if (startIndex < 0 || endIndex < startIndex || endIndex > nodes.length) {
+        if (startIndex < 0 || endIndex < startIndex || endIndex > arrSize - 1) {
             throw new IllegalArgumentException("Illegal arguments for slice()!");
         }
         SinglyLinkedList<K> newList = new SinglyLinkedList<>();
         int counter = startIndex;
         while (counter < endIndex) {
-            newList.add(get(find(counter)));
+            K data = get(counter);
+            if (data != null) {
+                newList.add(data);
+            }
             counter++;
         }
         return newList;
     }
 
+    @Override
+    public int compare(K o1, K o2) {
+        return o1.compareTo(o2);
+    }
 
-    private class Node<K> {
 
+    private class Node<K extends Comparable<K>> implements  Comparator<K> {
 
         private K data;
         private Node next;
         private Integer index;
 
         public Node(K data) {
+           this(data, -1);
+        }
+
+        public Node(K data, int index) {
             this.data = data;
+            this.index = index;
             this.next = null;
         }
 
@@ -175,6 +217,11 @@ public class SinglyLinkedList<K> {
 
         public void setIndex(Integer index) {
             this.index = index;
+        }
+
+        @Override
+        public int compare(K o1, K o2) {
+            return o1.compareTo(o2);
         }
     }
 
