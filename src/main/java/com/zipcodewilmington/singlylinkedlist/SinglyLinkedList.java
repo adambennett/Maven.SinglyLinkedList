@@ -40,7 +40,7 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
     public Boolean remove(K data) {
         if (head != null) {
             if (head.data.equals(data)) {
-                boolean toRet = removeInnerIf(data);
+                boolean toRet = removeInnerIf();
                 if (toRet) { arrSize--; }
                 return toRet;
             }
@@ -53,7 +53,7 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
         return false;
     }
 
-    private Boolean removeInnerIf(K data) {
+    private Boolean removeInnerIf() {
         if (head.equals(tail)) {
             head = null;
             tail = null;
@@ -139,7 +139,7 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
         SinglyLinkedList<K> newList = new SinglyLinkedList<>();
         Node current = head;
         while (current != null) {
-            newList.add((K) current.getData());
+            newList.add((K) current.data);
             current = current.next;
         }
         return newList;
@@ -147,7 +147,7 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
 
     public void sort() {
         Node current = head;
-        Node index = null;
+        Node index;
         K temp;
 
         if (head == null) {
@@ -186,11 +186,9 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
         Node current = tail;
         int oldIndex = current.index;
         current.index = 0;
-        int indexIter = 0;
         while (startIndex > -1 && current != null) {
             current.next = new Node(get(oldIndex - 1), current.index + 1);
             startIndex--;
-            indexIter++;
             current = current.next;
             oldIndex = current.index;
         }
@@ -200,7 +198,6 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
         tail = newTail;
         head = newHead;
     }
-
 
 
     public SinglyLinkedList<K> slice(int startIndex, int endIndex) {
@@ -231,43 +228,14 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
         private Node next;
         private Integer index;
 
-        public Node(K data) {
-           this(data, -1);
-        }
-
         public Node(K data, int index) {
             this.data = data;
             this.index = index;
             this.next = null;
         }
 
-        public K getData() {
-            return data;
-        }
-
-        public void setData(K data) {
-            this.data = data;
-        }
-
-
-        public Node<K> getNext() {
-            return next;
-        }
-
-        public void setNext(Node next) {
-            this.next = next;
-        }
-
         public Boolean hasNext() {
             return this.next != null;
-        }
-
-        public Integer getIndex() {
-            return index;
-        }
-
-        public void setIndex(Integer index) {
-            this.index = index;
         }
 
         @Override
