@@ -14,11 +14,14 @@ public class Model implements Comparable<Model> {
         this.someWords = someWords;
         this.someFlag = someFlag;
         this.functions = new ArrayList<>();
-        this.functions.add(getFunction());
+        this.functions.addAll(getFunctions());
     }
 
-    public FunctionHolder getFunction() {
-       return (modelNum) -> (modelNum > this.someWords.length() && this.someFlag) ? true : false;
+
+    public ArrayList<FunctionHolder> getFunctions() {
+        ArrayList<FunctionHolder> toRet = new ArrayList<>();
+        toRet.add((modelNum) -> (modelNum > this.someWords.length() && this.someFlag) ? true : false);
+        return toRet;
     }
 
     public Boolean areAllFunctionsTrue() {
@@ -36,7 +39,7 @@ public class Model implements Comparable<Model> {
 
     @Override
     public int compareTo(Model o) {
-        return (this.someNumber > o.getSomeNumber() && areAllFunctionsTrue()) ? 1 : (this.someNumber < o.getSomeNumber() || !areAllFunctionsTrue()) ? -1 : 0;
+        return (this.someNumber > o.getSomeNumber() && areAllFunctionsTrue()) ? -1 : (this.someNumber < o.getSomeNumber() || !areAllFunctionsTrue()) ? 1 : 0;
     }
 
     public Integer getSomeNumber() {

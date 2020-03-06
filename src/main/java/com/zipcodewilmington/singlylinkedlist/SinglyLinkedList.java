@@ -146,11 +146,48 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
     }
 
     public void sort() {
+        Node current = head;
+        Node index = null;
+        K temp;
 
+        if (head == null) {
+            return;
+        } else {
+            while (current != null) {
+                index = current.next;
+                while (index != null) {
+                    if (compare((K)current.data, (K)index.data) > 0) {
+                        temp = (K) current.data;
+                        current.data = index.data;
+                        index.data = temp;
+                    }
+                    index = index.next;
+                }
+                current = current.next;
+            }
+        }
     }
 
-    public void reverse() {
 
+
+    public void reverse() {
+        int startIndex = tail.index;
+        Node current = tail;
+        int oldIndex = current.index;
+        current.index = 0;
+        int indexIter = 0;
+        while (startIndex > -1 && current != null) {
+            current.next = new Node(get(oldIndex - 1), current.index + 1);
+            startIndex--;
+            indexIter++;
+            current = current.next;
+            oldIndex = current.index;
+        }
+
+        Node newHead = tail;
+        Node newTail = head;
+        tail = newTail;
+        head = newHead;
     }
 
 
