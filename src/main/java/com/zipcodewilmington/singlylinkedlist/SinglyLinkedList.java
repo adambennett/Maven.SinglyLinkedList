@@ -166,6 +166,17 @@ public class SinglyLinkedList<K extends Comparable<K>> implements Comparator<K> 
                 current = current.next;
             }
         }
+        updateIndices();
+    }
+
+    public void updateIndices() {
+        int newIndex = 0;
+        Node newHead = head;
+        while (newHead.hasNext()) {
+            newHead.index = newIndex;
+            newIndex++;
+            newHead = newHead.next;
+        }
     }
 
 

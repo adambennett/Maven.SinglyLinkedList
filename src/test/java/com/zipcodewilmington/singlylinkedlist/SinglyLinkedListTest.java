@@ -148,9 +148,6 @@ public class SinglyLinkedListTest
         genericTest.reverse();
         Assert.assertTrue(genericTest.get(0).equals(modelTestReallySmall));
         Assert.assertTrue(genericTest.get(1).equals(modelTestBig));
-        //Assert.assertTrue(genericTest.get(2).equals(modelTestFalse));
-        //Assert.assertTrue(genericTest.get(3).equals(modelTest));
-        //Assert.assertTrue(genericTest.get(4).equals(modelTestFalseB));
     }
 
     @Test
